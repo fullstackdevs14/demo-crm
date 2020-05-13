@@ -5,6 +5,18 @@ import Link from '@material-ui/core/Link';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { Typography } from '@material-ui/core';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+
+const RegisterSchema = Yup.object().shape({
+  name: Yup.string().required('Name is required'),
+  email: Yup.string().email('Invalid email').required('Email is Required'),
+  password: Yup.string().min(8, 'Password is too short').required('Required'),
+  confirmPassword: Yup.string().oneOf(
+    [Yup.ref('password'), null],
+    'Password does not match'
+  )
+});
 
 const useStyles = makeStyles({
   root: {
@@ -31,49 +43,102 @@ const RegisterForm = () => {
   const classes = useStyles();
 
   return (
-    <Card className={classes.root}>
-      <Typography variant="h4" className={classes.title}>
-        Demo CRM
-      </Typography>
-      <TextField id="name" label="Name" fullWidth variant="filled" required />
-      <TextField
-        id="email"
-        label="Email"
-        type="email"
-        fullWidth
-        variant="filled"
-        required
-      />
-      <TextField
-        label="Password"
-        type="password"
-        fullWidth
-        variant="filled"
-        autoComplete="off"
-        required
-      />
-      <TextField
-        label="Confirm Password"
-        type="password"
-        fullWidth
-        variant="filled"
-        autoComplete="off"
-        required
-      />
-      <div className={classes.actions}>
-        <Button color="primary" variant="contained" fullWidth>
-          Register
-        </Button>
-        <Link
-          className={classes.link}
-          href="/login"
-          variant="body2"
-          color="textPrimary"
-        >
-          Login
-        </Link>
-      </div>
-    </Card>
+    <Formik
+      initialValues={{
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+      }}
+      onSubmit={(values) => {
+        console.log(values);
+      }}
+      validationSchema={RegisterSchema}
+    >
+      {({
+        values,
+        errors,
+        touched,
+        handleSubmit,
+        handleChange,
+        handleBlur
+      }) => (
+        <form onSubmit={handleSubmit} noValidate>
+          <Card className={classes.root}>
+            <Typography variant="h4" className={classes.title}>
+              Demo CRM
+            </Typography>
+            <TextField
+              name="name"
+              label="Name"
+              fullWidth
+              variant="filled"
+              required
+              value={values.name}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.name && touched.name}
+            />
+            <TextField
+              name="email"
+              label="Email"
+              type="email"
+              fullWidth
+              variant="filled"
+              required
+              value={values.email}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.email && touched.email}
+            />
+            <TextField
+              name="password"
+              label="Password"
+              type="password"
+              fullWidth
+              variant="filled"
+              autoComplete="off"
+              required
+              value={values.password}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.password && touched.password}
+            />
+            <TextField
+              name="confirmPassword"
+              label="Confirm Password"
+              type="password"
+              fullWidth
+              variant="filled"
+              autoComplete="off"
+              required
+              value={values.confirmPassword}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.confirmPassword && touched.confirmPassword}
+            />
+            <div className={classes.actions}>
+              <Button
+                color="primary"
+                variant="contained"
+                fullWidth
+                type="submit"
+              >
+                Register
+              </Button>
+              <Link
+                className={classes.link}
+                href="/login"
+                variant="body2"
+                color="textPrimary"
+              >
+                Login
+              </Link>
+            </div>
+          </Card>
+        </form>
+      )}
+    </Formik>
   );
 };
 

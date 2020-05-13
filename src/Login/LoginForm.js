@@ -5,6 +5,13 @@ import Link from '@material-ui/core/Link';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { Typography } from '@material-ui/core';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+
+const LoginSchema = Yup.object().shape({
+  email: Yup.string().email('Invalid email').required('Email is Required'),
+  password: Yup.string().min(8, 'Password is too short').required('Required')
+});
 
 const useStyles = makeStyles({
   root: {
@@ -31,39 +38,78 @@ const LoginForm = () => {
   const classes = useStyles();
 
   return (
-    <Card className={classes.root}>
-      <Typography variant="h4" className={classes.title}>
-        Demo CRM
-      </Typography>
-      <TextField
-        id="email"
-        label="Email"
-        type="email"
-        fullWidth
-        variant="filled"
-      />
-      <TextField
-        id="standard-password-input"
-        label="Password"
-        type="password"
-        fullWidth
-        variant="filled"
-        autoComplete="off"
-      />
-      <div className={classes.actions}>
-        <Button color="primary" variant="contained" fullWidth>
-          Login
-        </Button>
-        <Link
-          className={classes.link}
-          href="/register"
-          variant="body2"
-          color="textPrimary"
-        >
-          Register
-        </Link>
-      </div>
-    </Card>
+    <Formik
+      initialValues={{
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+      }}
+      onSubmit={(values) => {
+        console.log(values);
+      }}
+      validationSchema={LoginSchema}
+    >
+      {({
+        values,
+        errors,
+        touched,
+        handleSubmit,
+        handleChange,
+        handleBlur
+      }) => (
+        <form onSubmit={handleSubmit} noValidate>
+          <Card className={classes.root}>
+            <Typography variant="h4" className={classes.title}>
+              Demo CRM
+            </Typography>
+            <TextField
+              name="email"
+              label="Email"
+              type="email"
+              fullWidth
+              variant="filled"
+              required
+              value={values.email}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.email && touched.email}
+            />
+            <TextField
+              name="password"
+              label="Password"
+              type="password"
+              fullWidth
+              variant="filled"
+              autoComplete="off"
+              required
+              value={values.password}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors.password && touched.password}
+            />
+            <div className={classes.actions}>
+              <Button
+                color="primary"
+                variant="contained"
+                fullWidth
+                type="submit"
+              >
+                Login
+              </Button>
+              <Link
+                className={classes.link}
+                href="/register"
+                variant="body2"
+                color="textPrimary"
+              >
+                Register
+              </Link>
+            </div>
+          </Card>
+        </form>
+      )}
+    </Formik>
   );
 };
 
