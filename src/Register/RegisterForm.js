@@ -1,21 +1,23 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import Link from '@material-ui/core/Link';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const RegisterSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
   email: Yup.string().email('Invalid email').required('Email is Required'),
   password: Yup.string().min(8, 'Password is too short').required('Required'),
-  confirmPassword: Yup.string().oneOf(
-    [Yup.ref('password'), null],
-    'Password does not match'
-  )
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password'), null], 'Password does not match')
+    .required('Required')
 });
 
 const useStyles = makeStyles({
@@ -39,7 +41,7 @@ const useStyles = makeStyles({
   }
 });
 
-const RegisterForm = () => {
+const RegisterForm = ({ onSubmit, loading }) => {
   const classes = useStyles();
 
   return (
@@ -50,9 +52,7 @@ const RegisterForm = () => {
         password: '',
         confirmPassword: ''
       }}
-      onSubmit={(values) => {
-        console.log(values);
-      }}
+      onSubmit={onSubmit}
       validationSchema={RegisterSchema}
     >
       {({
@@ -123,8 +123,9 @@ const RegisterForm = () => {
                 variant="contained"
                 fullWidth
                 type="submit"
+                disabled={loading}
               >
-                Register
+                {loading ? <LoadingSpinner size={24} /> : 'Register'}
               </Button>
               <Link
                 className={classes.link}
@@ -140,6 +141,11 @@ const RegisterForm = () => {
       )}
     </Formik>
   );
+};
+
+RegisterForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  loading: PropTypes.bool
 };
 
 export default RegisterForm;

@@ -1,12 +1,15 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import Link from '@material-ui/core/Link';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is Required'),
@@ -34,7 +37,7 @@ const useStyles = makeStyles({
   }
 });
 
-const LoginForm = () => {
+const LoginForm = ({ onSubmit, loading }) => {
   const classes = useStyles();
 
   return (
@@ -45,9 +48,7 @@ const LoginForm = () => {
         password: '',
         confirmPassword: ''
       }}
-      onSubmit={(values) => {
-        console.log(values);
-      }}
+      onSubmit={onSubmit}
       validationSchema={LoginSchema}
     >
       {({
@@ -94,8 +95,9 @@ const LoginForm = () => {
                 variant="contained"
                 fullWidth
                 type="submit"
+                disabled={loading}
               >
-                Login
+                {loading ? <LoadingSpinner size={24} /> : 'Login'}
               </Button>
               <Link
                 className={classes.link}
@@ -111,6 +113,11 @@ const LoginForm = () => {
       )}
     </Formik>
   );
+};
+
+LoginForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  loading: PropTypes.bool
 };
 
 export default LoginForm;
