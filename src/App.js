@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route, Router, Redirect } from 'react-router-dom';
+import { Switch, Router, Redirect } from 'react-router-dom';
 import { ApolloProvider } from '@apollo/react-hooks';
 
 import history from './core/history';
