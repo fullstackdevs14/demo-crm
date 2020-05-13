@@ -13,7 +13,8 @@ const useStyles = makeStyles((theme) => ({
     height: '100vh',
     background: theme.palette.background.default,
     color: theme.palette.text.primary,
-    padding: '80px 16px 16px'
+    padding: '80px 16px 16px',
+    boxSizing: 'border-box'
   },
   menuButton: {
     marginRight: theme.spacing(2)
