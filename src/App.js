@@ -6,6 +6,7 @@ import history from './core/history';
 import client from './core/apollo-client';
 
 import PrivateRoute from './core/PrivateRoute';
+import PublicRoute from './core/PublicRoute';
 
 import Login from './Login';
 import Register from './Register';
@@ -16,12 +17,8 @@ const App = () => {
     <ApolloProvider client={client}>
       <Router history={history}>
         <Switch>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/register">
-            <Register />
-          </Route>
+          <PublicRoute path="/login" component={Login} />
+          <PublicRoute path="/register" component={Register} />
           <PrivateRoute path="/" component={Portal} />
           <Redirect to="/" />
         </Switch>
