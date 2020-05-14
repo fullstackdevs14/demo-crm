@@ -6,7 +6,6 @@ import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 import useSetToken from '../core/state/hooks/useSetToken';
-import history from '../core/history';
 import BgImage from '../components/BgImage';
 import LoginForm from './LoginForm';
 
@@ -28,52 +27,45 @@ const LOGIN_MUTATION = gql`
   }
 `;
 
-const Login = () => {
+const Login = ({ history }) => {
   const classes = useStyles();
-  const [error, setError] = useState('');
+  const [alert, setAlert] = useState('');
   const setToken = useSetToken();
-  const [login, { loading }] = useMutation(LOGIN_MUTATION, {
-    onCompleted: async ({ login }) => {
+  const [login, { loading }] = useMutation(LOGIN_MUTATION);
+
+  const handleErrorAlertClose = () => {
+    setAlert('');
+  };
+
+  const handleLogin = async (values) => {
+    try {
+      const { data } = await login({
+        variables: values
+      });
       await setToken({
         variables: {
-          token: login.token
+          token: data.login.token
         }
       });
       history.push('/');
-    },
-    onError: ({ graphQLErrors }) => {
-      if (
-        graphQLErrors[0] &&
-        graphQLErrors[0].extensions.code === 'UNAUTHENTICATED'
-      ) {
-        setError('Email or password is incorrect!');
-        return;
+    } catch (err) {
+      if (err) {
+        if (err.message && err.message.indexOf('Invalid credentials') >= 0) {
+          setAlert('Invalid credentials');
+        } else {
+          setAlert(err.message);
+        }
       }
-
-      setError('Unknown error');
     }
-  });
-
-  const handleErrorAlertClose = () => {
-    setError('');
   };
 
   return (
     <div>
       <BgImage />
       <div className={classes.content}>
-        <LoginForm
-          onSubmit={async (values) => {
-            try {
-              await login({
-                variables: values
-              });
-            } catch (err) {}
-          }}
-          loading={loading}
-        />
+        <LoginForm onSubmit={handleLogin} loading={loading} />
         <Snackbar
-          open={Boolean(error)}
+          open={Boolean(alert)}
           autoHideDuration={6000}
           anchorOrigin={{
             vertical: 'top',
@@ -82,7 +74,7 @@ const Login = () => {
           onClose={handleErrorAlertClose}
         >
           <Alert onClose={handleErrorAlertClose} severity="error">
-            {error}
+            {alert}
           </Alert>
         </Snackbar>
       </div>
