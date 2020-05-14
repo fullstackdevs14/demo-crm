@@ -45,11 +45,11 @@ const GET_CONTACT = gql`
   }
 `;
 
-const ContactsDetails = ({ history }) => {
+const ContactsDetails = ({ history, match }) => {
   const classes = useStyles();
   const { loading, error, data } = useQuery(GET_CONTACT, {
     variables: {
-      id: 1
+      id: +match.params.id
     }
   });
 
